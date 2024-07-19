@@ -1,0 +1,2 @@
+chmod +x generate_key.sh
+./generate_key.sh
