@@ -45,5 +45,5 @@ def process_file(file_path, decrypt=True):
 
 if __name__ == "__main__":
     # True to decrypt or False to encrypt
-    decrypt = True
+    decrypt = False
     process_file('keyfile.txt', decrypt)
