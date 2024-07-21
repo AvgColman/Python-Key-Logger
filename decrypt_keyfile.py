@@ -45,5 +45,9 @@ def process_file(file_path, decrypt=True):
 
 if __name__ == "__main__":
     # True to decrypt or False to encrypt
+<<<<<<< HEAD
     decrypt = True
+=======
+    decrypt = False
+>>>>>>> parent of 332cb8d (working decryption)
     process_file('keyfile.txt', decrypt)
