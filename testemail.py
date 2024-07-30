@@ -4,9 +4,9 @@ from email.mime.multipart import MIMEMultipart
 import os
 
 sender_email = "test34124logger@outlook.com"
-receiver_email = ""
-subject = "Test"
-body = "Test"
+receiver_email = "hnyquist44@gmail.com"
+subject = "Test3"
+body = 'Test3'
 
 message = MIMEMultipart()
 message["From"] = sender_email
@@ -18,7 +18,7 @@ message.attach(MIMEText(body, "plain"))
 # SMTP server configuration based on senders smtp server requirments
 smtp_server = "smtp.office365.com"
 smtp_port = 587
-password = ""  
+password = "Haydenandcarson12"  
 
 try:
     server = smtplib.SMTP(smtp_server, smtp_port)
