@@ -1,1 +1,1 @@
-fortnite[Key.backspace][Key.backspace][Key.backspace][Key.backspace][Key.backspace][Key.backspace][Key.backspace][Key.backspace][Key.esc]
+baka[Key.esc]

