@@ -1,1 +1,1 @@
-This is a Python Key Logger created for Educational purposes. Please do not use this for malicious purposes. 
+This is a Python Key Logger created for educational purposes. Please do not use this for malicious purposes. 
